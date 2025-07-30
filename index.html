@@ -28,15 +28,17 @@
       overflow-x: hidden;
     }
 
-    #bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      width: 100vw;
-      height: 100vh;
-      display: block;
-    }
+  #bgCanvas {
+  position: fixed;
+  bottom: 20px;  /* position from bottom */
+  right: 20px;   /* position from right */
+  width: 300px;  /* smaller width */
+  height: 300px; /* smaller height */
+  z-index: 10;   /* bring it in front of background but behind popup */
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  background: transparent;
+}
 
     body {
       background: #111;
@@ -147,18 +149,17 @@
       opacity: 1;
     }
 
-    .popup-content {
-      background: #222;
-      border: 2px solid #00ffff;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 700px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    .popup-content img {  
+      width: 90vw;            /* Responsive width (up to 90% viewport width) */
+      max-width: 700px;       /* Max width limit */  
+      max-height: 80vh;       /* Max height limit to keep it fully visible */
+      object-fit: contain;    /* Keep full image visible, no cropping */
+      margin-bottom: 20px;
+      border: 2px dashed #00ffff;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
-
     .popup-content img {
       width: 100%;
       max-height: 400px;
