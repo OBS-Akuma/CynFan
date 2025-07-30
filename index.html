@@ -2,49 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="CynFan Art Showcase" />
-  <meta property="og:description" content="Explore my cool 3D art collection with interactive cards and animations!" />
-  <meta property="og:image" content="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" />
-  <meta property="og:url" content="https://yourwebsite.com/" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="CynFan Art Showcase" />
-  <meta name="twitter:description" content="Explore my cool 3D art collection with interactive cards and animations!" />
-  <meta name="twitter:image" content="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" />
-  <title>CynFan Art Showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CynFan Art Showcase with Loading</title>
   <style>
+    /* Reset */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-
     body, html {
       height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #111;
+      color: #fff;
       overflow-x: hidden;
     }
 
-  #bgCanvas {
-  position: fixed;
-  bottom: 20px;  /* position from bottom */
-  right: 20px;   /* position from right */
-  width: 300px;  /* smaller width */
-  height: 300px; /* smaller height */
-  z-index: 10;   /* bring it in front of background but behind popup */
-  border: 2px solid #00ffff;
-  border-radius: 8px;
-  background: transparent;
-}
-
-    body {
+    /* Loading screen container */
+    #loadingScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
       background: #111;
-      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      transition: opacity 1s ease;
+    }
+
+    #loadingScreen.fadeOut {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Canvas size */
+    #bgCanvas {
+      width: 300px;
+      height: 300px;
+      display: block;
+    }
+
+    /* Main content hidden initially */
+    #mainContent {
+      opacity: 0;
+      transition: opacity 1s ease;
       padding: 40px;
-      position: relative;
+    }
+    #mainContent.visible {
+      opacity: 1;
     }
 
     h1 {
@@ -69,31 +77,7 @@
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-      animation: pulseBorder 3s infinite;
       cursor: pointer;
-    }
-
-    .art-card::before,
-    .art-card::after {
-      content: '';
-      position: absolute;
-      border: 1px dashed #00ffff;
-      pointer-events: none;
-      opacity: 0.3;
-    }
-
-    .art-card::before {
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-    }
-
-    .art-card::after {
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      bottom: 20px;
     }
 
     .art-card:hover {
@@ -123,114 +107,53 @@
       color: #aaa;
     }
 
-    @keyframes pulseBorder {
-      0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); }
-      50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.4); }
-    }
+    /* Popup styles omitted here, add if you want */
 
-    /* Popup Styles */
-    .popup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .popup.active {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .popup-content img {  
-      width: 90vw;            /* Responsive width (up to 90% viewport width) */
-      max-width: 700px;       /* Max width limit */  
-      max-height: 80vh;       /* Max height limit to keep it fully visible */
-      object-fit: contain;    /* Keep full image visible, no cropping */
-      margin-bottom: 20px;
-      border: 2px dashed #00ffff;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .popup-content img {
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      margin-bottom: 20px;
-      border: 2px dashed #00ffff;
-    }
-
-    .popup-content h2 {
-      margin-bottom: 10px;
-    }
-
-    .popup-content p {
-      color: #aaa;
-    }
-
-    .popup-close {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 30px;
-      color: #00ffff;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-  <canvas id="bgCanvas"></canvas>
 
-  <h1>CynFan Art Showcase</h1>
-  <div class="gallery">
-    <div class="art-card" data-title="i made it bc it's silly" data-description="i made it bc it's silly" data-image="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp">
-      <img class="art-image" src="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" alt="Art 1">
-      <div class="art-info">
-        <h2>-</h2>
-        <p>-</p>
-      </div>
-    </div>
-    <div class="art-card" data-title="-" data-description="-" data-image="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp">
-      <img class="art-image" src="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp" alt="Art 2">
-      <div class="art-info">
-        <h2>-</h2>
-        <p>-</p>
-      </div>
-    </div>
-    <div class="art-card" data-title="-" data-description="-" data-image="https://i.ibb.co/zVHk8GWj/IMG-0855.webp">
-      <img class="art-image" src="https://i.ibb.co/zVHk8GWj/IMG-0855.webp" alt="Art 3">
-      <div class="art-info">
-        <h2>-</h2>
-        <p>-</p>
-      </div>
-    </div>
+  <!-- Loading Screen -->
+  <div id="loadingScreen">
+    <canvas id="bgCanvas" width="300" height="300"></canvas>
   </div>
 
-  <!-- Popup HTML -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <span class="popup-close" id="popupClose">&times;</span>
-      <img id="popupImage" src="" alt="">
-      <h2 id="popupTitle"></h2>
-      <p id="popupDesc"></p>
+  <!-- Main Content -->
+  <div id="mainContent">
+    <h1>CynFan Art Showcase</h1>
+    <div class="gallery">
+      <div class="art-card" data-title="I made it bc it's silly" data-description="I made it bc it's silly" data-image="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp">
+        <img class="art-image" src="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" alt="Art 1" />
+        <div class="art-info">
+          <h2>I made it bc it's silly</h2>
+          <p>Some fun 3D art</p>
+        </div>
+      </div>
+      <div class="art-card" data-title="Artwork 2" data-description="Description 2" data-image="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp">
+        <img class="art-image" src="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp" alt="Art 2" />
+        <div class="art-info">
+          <h2>Artwork 2</h2>
+          <p>Description 2</p>
+        </div>
+      </div>
+      <div class="art-card" data-title="Artwork 3" data-description="Description 3" data-image="https://i.ibb.co/zVHk8GWj/IMG-0855.webp">
+        <img class="art-image" src="https://i.ibb.co/zVHk8GWj/IMG-0855.webp" alt="Art 3" />
+        <div class="art-info">
+          <h2>Artwork 3</h2>
+          <p>Description 3</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
   <script>
+    // Setup Three.js scene for loading animation
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000); // aspect 1 since canvas 300x300
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bgCanvas'), alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(300, 300);
     renderer.setPixelRatio(window.devicePixelRatio);
 
     const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
@@ -253,48 +176,18 @@
 
     animate();
 
-    window.addEventListener('resize', () => {
-      camera.aspect = 300 / 300;
-      camera.updateProjectionMatrix();
-      renderer.setSize(300, 300);
-    });
-
-  </script>
-
-  <!-- Popup Script -->
-  <script>
-    const popup = document.getElementById('popup');
-    const popupImage = document.getElementById('popupImage');
-    const popupTitle = document.getElementById('popupTitle');
-    const popupDesc = document.getElementById('popupDesc');
-    const popupClose = document.getElementById('popupClose');
-
-    document.querySelectorAll('.art-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const title = card.getAttribute('data-title');
-        const desc = card.getAttribute('data-description');
-        const image = card.getAttribute('data-image');
-
-        popupImage.src = image;
-        popupTitle.textContent = title;
-        popupDesc.textContent = desc;
-
-        popup.classList.add('active');
-      });
-    });
-
-    popupClose.addEventListener('click', () => {
-      popup.classList.remove('active');
-    });
-
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) popup.classList.remove('active');
+    // After 3 seconds, fade out loading screen and show content
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        const mainContent = document.getElementById('mainContent');
+        loadingScreen.classList.add('fadeOut');
+        mainContent.classList.add('visible');
+      }, 3000); // 3000ms = 3 seconds
     });
   </script>
-
-  <!-- Neko Script (unchanged) -->
   <script>
-  (() => {
+      (() => {
     const nekoGif = "https://raw.githubusercontent.com/adryd325/oneko.js/14bab15a755d0e35cd4ae19c931d96d306f99f42/oneko.gif";
     const nekoEl = document.createElement("div");
     let nekoPosX = 32;
