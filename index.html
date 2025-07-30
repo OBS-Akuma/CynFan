@@ -186,15 +186,15 @@
       <div class="art-card" data-title="Artwork 2" data-description="Description 2" data-image="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp">
         <img class="art-image" src="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp" alt="Art 2" />
         <div class="art-info">
-          <h2>Artwork 2</h2>
-          <p>Description 2</p>
+          <h2>null</h2>
+          <p>null</p>
         </div>
       </div>
       <div class="art-card" data-title="Artwork 3" data-description="Description 3" data-image="https://i.ibb.co/zVHk8GWj/IMG-0855.webp">
         <img class="art-image" src="https://i.ibb.co/zVHk8GWj/IMG-0855.webp" alt="Art 3" />
         <div class="art-info">
-          <h2>Artwork 3</h2>
-          <p>Description 3</p>
+          <h2>null</h2>
+          <p>null</p>
         </div>
       </div>
     </div>
@@ -221,7 +221,7 @@
     renderer.setPixelRatio(window.devicePixelRatio);
 
     const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
+    const material = new THREE.MeshStandardMaterial({ wireframe: true });
     const torusKnot = new THREE.Mesh(geometry, material);
     scene.add(torusKnot);
 
@@ -231,10 +231,23 @@
 
     camera.position.z = 40;
 
+    let colorPhase = 0;
+
     function animate() {
       requestAnimationFrame(animate);
       torusKnot.rotation.x += 0.005;
       torusKnot.rotation.y += 0.01;
+
+      // Increment phase (speed of color change)
+      colorPhase += 0.01;
+
+      // Calculate RGB values cycling smoothly
+      const r = (Math.sin(colorPhase) + 1) / 2; // 0 to 1
+      const g = (Math.sin(colorPhase + 2) + 1) / 2;
+      const b = (Math.sin(colorPhase + 4) + 1) / 2;
+
+      material.color.setRGB(r, g, b);
+
       renderer.render(scene, camera);
     }
 
@@ -367,49 +380,43 @@
     }
 
     function frame() {
-      frameCount += 1;
-      const diffX = nekoPosX - mousePosX;
-      const diffY = nekoPosY - mousePosY;
-      const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
-
-      if (distance < nekoSpeed || distance < 48) {
+      if (Math.abs(mousePosX - nekoPosX) < 8 && Math.abs(mousePosY - nekoPosY) < 8) {
         idle();
-        return;
+        idleTime += 1;
+      } else {
+        idleTime = 0;
+        let dx = mousePosX - nekoPosX;
+        let dy = mousePosY - nekoPosY;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < nekoSpeed) {
+          nekoPosX = mousePosX;
+          nekoPosY = mousePosY;
+          setSprite("idle", 0);
+        } else {
+          nekoPosX += (dx / dist) * nekoSpeed;
+          nekoPosY += (dy / dist) * nekoSpeed;
+          let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          let dir;
+          if (angle >= -22.5 && angle < 22.5) dir = "E";
+          else if (angle >= 22.5 && angle < 67.5) dir = "NE";
+          else if (angle >= 67.5 && angle < 112.5) dir = "N";
+          else if (angle >= 112.5 && angle < 157.5) dir = "NW";
+          else if (angle >= -67.5 && angle < -22.5) dir = "SE";
+          else if (angle >= -112.5 && angle < -67.5) dir = "S";
+          else if (angle >= -157.5 && angle < -112.5) dir = "SW";
+          else dir = "W";
+          setSprite(dir, frameCount++);
+        }
       }
-
-      idleAnimation = null;
-      idleAnimationFrame = 0;
-
-      if (idleTime > 1) {
-        setSprite("alert", 0);
-        idleTime = Math.min(idleTime, 7);
-        idleTime -= 1;
-        return;
-      }
-
-      let dir = "";
-      dir += diffY / distance > 0.5 ? "N" : "";
-      dir += diffY / distance < -0.5 ? "S" : "";
-      dir += diffX / distance > 0.5 ? "W" : "";
-      dir += diffX / distance < -0.5 ? "E" : "";
-
-      setSprite(dir, frameCount);
-
-      nekoPosX -= (diffX / distance) * nekoSpeed;
-      nekoPosY -= (diffY / distance) * nekoSpeed;
-
-      nekoPosX = Math.min(Math.max(16, nekoPosX), window.innerWidth - 16);
-      nekoPosY = Math.min(Math.max(16, nekoPosY), window.innerHeight - 16);
-
-      nekoEl.style.left = `${nekoPosX - 16}px`;
-      nekoEl.style.top = `${nekoPosY - 16}px`;
+      nekoEl.style.left = `${Math.round(nekoPosX - 16)}px`;
+      nekoEl.style.top = `${Math.round(nekoPosY - 16)}px`;
     }
 
     init();
   })();
   </script>
 
-  <!-- Popup Modal Script -->
+  <!-- Popup handling -->
   <script>
     const popup = document.getElementById('popup');
     const popupTitle = document.getElementById('popupTitle');
@@ -419,10 +426,10 @@
 
     document.querySelectorAll('.art-card').forEach(card => {
       card.addEventListener('click', () => {
-        popupTitle.textContent = card.dataset.title || '';
-        popupDescription.textContent = card.dataset.description || '';
-        popupImage.src = card.dataset.image || '';
-        popupImage.alt = card.dataset.title || 'Artwork Image';
+        popupTitle.textContent = card.dataset.title;
+        popupDescription.textContent = card.dataset.description;
+        popupImage.src = card.dataset.image;
+        popupImage.alt = card.dataset.title;
         popup.classList.add('visible');
       });
     });
@@ -431,15 +438,15 @@
       popup.classList.remove('visible');
     });
 
-    // Close popup on clicking outside content
-    popup.addEventListener('click', (e) => {
+    // Close popup on outside click
+    popup.addEventListener('click', e => {
       if (e.target === popup) {
         popup.classList.remove('visible');
       }
     });
 
-    // Optional: Close popup on Escape key press
-    window.addEventListener('keydown', (e) => {
+    // Close popup with Escape key
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && popup.classList.contains('visible')) {
         popup.classList.remove('visible');
       }
