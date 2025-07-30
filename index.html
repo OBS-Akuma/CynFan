@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CynFan Art Showcase with Loading</title>
+  <title>CynFan Art</title>
   <style>
     /* Reset */
     * {
@@ -107,8 +107,62 @@
       color: #aaa;
     }
 
-    /* Popup styles omitted here, add if you want */
-
+    /* Popup Modal Styles */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 20000;
+      padding: 20px;
+    }
+    #popup.visible {
+      display: flex;
+    }
+    #popupContent {
+      background: #111;
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 0 30px #00ffff;
+      color: #ccc;
+      overflow-y: auto;
+    }
+    #popupClose {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #00ffff;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+    #popupTitle {
+      color: #00ffff;
+      margin-bottom: 10px;
+    }
+    #popupImage {
+      max-width: 100%;
+      max-height: 70vh;
+      display: block;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px #00ffffaa;
+    }
+    #popupDescription {
+      font-size: 1em;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -126,23 +180,33 @@
         <img class="art-image" src="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" alt="Art 1" />
         <div class="art-info">
           <h2>I made it bc it's silly</h2>
-          <p>Some fun 3D art</p>
+          <p>-</p>
         </div>
       </div>
       <div class="art-card" data-title="Artwork 2" data-description="Description 2" data-image="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp">
         <img class="art-image" src="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp" alt="Art 2" />
         <div class="art-info">
-          <h2>Artwork 2</h2>
-          <p>Description 2</p>
+          <h2>Artwork</h2>
+          <p>Description</p>
         </div>
       </div>
       <div class="art-card" data-title="Artwork 3" data-description="Description 3" data-image="https://i.ibb.co/zVHk8GWj/IMG-0855.webp">
         <img class="art-image" src="https://i.ibb.co/zVHk8GWj/IMG-0855.webp" alt="Art 3" />
         <div class="art-info">
-          <h2>Artwork 3</h2>
-          <p>Description 3</p>
+          <h2>Artwork</h2>
+          <p>Description</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Popup Modal -->
+  <div id="popup" aria-modal="true" role="dialog" aria-labelledby="popupTitle" aria-describedby="popupDescription">
+    <div id="popupContent">
+      <button id="popupClose" aria-label="Close popup">X</button>
+      <h2 id="popupTitle"></h2>
+      <img id="popupImage" src="" alt="" />
+      <p id="popupDescription"></p>
     </div>
   </div>
 
@@ -186,6 +250,8 @@
       }, 3000); // 3000ms = 3 seconds
     });
   </script>
+
+  <!-- Neko animation script omitted for brevity, keep your existing one here -->
   <script>
       (() => {
     const nekoGif = "https://raw.githubusercontent.com/adryd325/oneko.js/14bab15a755d0e35cd4ae19c931d96d306f99f42/oneko.gif";
@@ -342,5 +408,43 @@
     init();
   })();
   </script>
+
+  <!-- Popup Modal Script -->
+  <script>
+    const popup = document.getElementById('popup');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupImage = document.getElementById('popupImage');
+    const popupDescription = document.getElementById('popupDescription');
+    const popupClose = document.getElementById('popupClose');
+
+    document.querySelectorAll('.art-card').forEach(card => {
+      card.addEventListener('click', () => {
+        popupTitle.textContent = card.dataset.title || '';
+        popupDescription.textContent = card.dataset.description || '';
+        popupImage.src = card.dataset.image || '';
+        popupImage.alt = card.dataset.title || 'Artwork Image';
+        popup.classList.add('visible');
+      });
+    });
+
+    popupClose.addEventListener('click', () => {
+      popup.classList.remove('visible');
+    });
+
+    // Close popup on clicking outside content
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        popup.classList.remove('visible');
+      }
+    });
+
+    // Optional: Close popup on Escape key press
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popup.classList.contains('visible')) {
+        popup.classList.remove('visible');
+      }
+    });
+  </script>
+
 </body>
 </html>
