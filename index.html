@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CynFan Art</title>
+  <title>CynFan Art Showcase with Loading</title>
   <style>
     /* Reset */
     * {
@@ -180,21 +180,21 @@
         <img class="art-image" src="https://i.ibb.co/qL6Zy2X2/IMG-0860.webp" alt="Art 1" />
         <div class="art-info">
           <h2>I made it bc it's silly</h2>
-          <p>-</p>
+          <p>Some fun 3D art</p>
         </div>
       </div>
       <div class="art-card" data-title="Artwork 2" data-description="Description 2" data-image="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp">
         <img class="art-image" src="https://i.ibb.co/pvVr6WPZ/IMG-0851.webp" alt="Art 2" />
         <div class="art-info">
-          <h2>Artwork</h2>
-          <p>Description</p>
+          <h2>Artwork 2</h2>
+          <p>Description 2</p>
         </div>
       </div>
       <div class="art-card" data-title="Artwork 3" data-description="Description 3" data-image="https://i.ibb.co/zVHk8GWj/IMG-0855.webp">
         <img class="art-image" src="https://i.ibb.co/zVHk8GWj/IMG-0855.webp" alt="Art 3" />
         <div class="art-info">
-          <h2>Artwork</h2>
-          <p>Description</p>
+          <h2>Artwork 3</h2>
+          <p>Description 3</p>
         </div>
       </div>
     </div>
@@ -211,46 +211,45 @@
   </div>
 
   <!-- Three.js -->
-  <!-- 3D RGB rotating cube using Three.js -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-<canvas id="rgbCubeCanvas" style="width:300px; height:300px; display:block;"></canvas>
-<script>
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script>
+    // Setup Three.js scene for loading animation
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000); // aspect 1 since canvas 300x300
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bgCanvas'), alpha: true });
+    renderer.setSize(300, 300);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
-  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('rgbCubeCanvas'), alpha: true });
-  renderer.setSize(300, 300);
-  renderer.setPixelRatio(window.devicePixelRatio);
+    const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+    const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
+    const torusKnot = new THREE.Mesh(geometry, material);
+    scene.add(torusKnot);
 
-  // Create cube geometry
-  const geometry = new THREE.BoxGeometry();
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(20, 20, 20);
+    scene.add(light);
 
-  // Define materials for each face with RGB colors
-  const materials = [
-    new THREE.MeshBasicMaterial({ color: 0xff0000 }), // red
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // green
-    new THREE.MeshBasicMaterial({ color: 0x0000ff }), // blue
-    new THREE.MeshBasicMaterial({ color: 0xff0000 }), // red
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // green
-    new THREE.MeshBasicMaterial({ color: 0x0000ff })  // blue
-  ];
+    camera.position.z = 40;
 
-  const cube = new THREE.Mesh(geometry, materials);
-  scene.add(cube);
+    function animate() {
+      requestAnimationFrame(animate);
+      torusKnot.rotation.x += 0.005;
+      torusKnot.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
 
-  camera.position.z = 3;
+    animate();
 
-  function animate() {
-    requestAnimationFrame(animate);
-
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-
-    renderer.render(scene, camera);
-  }
-
-  animate();
-</script>
+    // After 3 seconds, fade out loading screen and show content
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        const mainContent = document.getElementById('mainContent');
+        loadingScreen.classList.add('fadeOut');
+        mainContent.classList.add('visible');
+      }, 3000); // 3000ms = 3 seconds
+    });
+  </script>
 
   <!-- Neko animation script omitted for brevity, keep your existing one here -->
   <script>
